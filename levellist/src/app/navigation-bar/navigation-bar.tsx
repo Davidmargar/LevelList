@@ -1,6 +1,21 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getAnalytics } from 'firebase/analytics';
+
+// TODO: Replace the following with your app's Firebase project configuration
+// See: https://firebase.google.com/docs/web/learn-more#config-object
+const firebaseConfig = {
+    apiKey: "AIzaSyBaEgrHEOgZCNYk9GnOd7ZcDjTs4MFCLxs",
+    authDomain: "levellist.firebaseapp.com",
+    projectId: "levellist",
+    storageBucket: "levellist.appspot.com",
+    messagingSenderId: "556130227404",
+    appId: "1:556130227404:web:3d93eb543d06d8acc5de69",
+    measurementId: "G-QZCVZLK76S"
+  };
 
 
 export default function NavigationBar() {
@@ -9,6 +24,20 @@ export default function NavigationBar() {
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
     };
+
+    useEffect(() => {
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+        auth.languageCode = 'es';
+    
+        // Puedes realizar cualquier otra configuración necesaria aquí
+    
+        return () => {
+          // Realizar limpieza si es necesario
+        };
+      }, []);
 
     return (
         <div className="z-1 w-full flex flex-wrap justify-end p-4 bg-gray-800">

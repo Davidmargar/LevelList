@@ -1,9 +1,12 @@
-import LandingPage from './landing-page/landing-page'
+'use client'
+import React, { useEffect } from 'react';
+import LandingPage from './landing-page/landing-page';
 
-export default function Home() {
-  return(
-    <div>
-      <LandingPage />
-    </div>  
-  )
-}
+  export default function Home() {
+  
+    return (
+      <div>
+        <LandingPage />
+      </div>
+    );
+  }

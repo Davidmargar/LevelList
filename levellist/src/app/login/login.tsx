@@ -18,7 +18,7 @@ export default function Login() {
                         </div>
                         <label htmlFor="remember" className="ms-2 text-sm font-medium">Recuérdame</label>
                     </div>
-                    <button type="submit" className="text-white bg-gray-500 hover:bg-gray-600 focus:ring-2 focus:outline-none font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Submit</button>
+                    <button type="submit" className="text-white bg-gray-500 hover:bg-gray-600 focus:ring-2 focus:outline-none font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Enviar</button>
                 </form>
             </div>
         </main>
