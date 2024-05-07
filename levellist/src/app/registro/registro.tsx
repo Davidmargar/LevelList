@@ -1,12 +1,11 @@
 'use client'
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification} from "firebase/auth"
-import { useRouter } from 'next/navigation';
+import firebase, { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile} from "firebase/auth"
 import React, { useState } from 'react'
 
 export default function Registro() {
-    const router = useRouter()
 
     let [email, setEmail] = useState('')
+    let [displayName, setDisplayName] = useState('')
     let [password, setPassword] = useState('')
     let [errorMessage, setErrorMessage] = useState('')
     let [successMessage, setSuccessMessage] = useState('')
@@ -14,6 +13,10 @@ export default function Registro() {
     const handleEmailChange = (event) => {
         setEmail(event.target.value)
         setErrorMessage("")
+    }
+
+    const handleDisplayChange = (event) => {
+        setDisplayName(event.target.value)
     }
 
     const handlePassChange = (event) => {
@@ -30,15 +33,21 @@ export default function Registro() {
             setEmail('')
             setPassword('')
             const user = userCredential.user
-            sendEmailVerification(user)
-            .then(() => {
-                console.log('Correo enviado.')
-              })
-              .catch((error) => {
-                console.log(error.message)
-              });
-            setSuccessMessage('¡Bienvenido a Levellist! Se te ha enviado un correo de activación.')
-            //irInicio()
+            updateProfile(user, {
+                displayName: displayName
+            }).then(() => {
+                sendEmailVerification(user)
+                .then(() => {
+                    console.log('Correo enviado.')
+                })
+                .catch((error) => {
+                    console.log(error.message)
+                })
+                setSuccessMessage('¡Bienvenido a Levellist! Se te ha enviado un correo de activación.')
+                //irInicio()
+            }).catch((error) => {
+                console.log(error)
+            })
         })
         .catch((error: { code: any; message: any }) => {
             // Manejar errores y mostrar mensaje de error
@@ -66,6 +75,17 @@ export default function Registro() {
             <p className="mb-4 text-sm">Comienza rápidamente a compartir tus opiniones con miles de usuarios.</p>
             <div>
                 <form className="max-w-sm" onSubmit={handleSubmit}>
+                    <div className="mb-5">     
+                        <input
+                            type="text"
+                            id="displayName"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-gray-100 invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+                            placeholder="Nombre de usuario"
+                            required
+                            value={displayName} // Asignamos el valor de email al campo de entrada
+                            onChange={handleDisplayChange} // Manejador para actualizar el estado cuando cambie el valor del campo
+                        />
+                    </div>
                     <div className="mb-5">     
                         <input
                             type="email"

@@ -20,6 +20,7 @@ const firebaseConfig = {
 
 export default function NavigationBar() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [username, setUsername] = useState('');
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -31,6 +32,11 @@ export default function NavigationBar() {
         const auth = getAuth(app);
         const analytics = getAnalytics(app);
         auth.languageCode = 'es';
+
+        const storedUsername = localStorage.getItem('user');
+        if (storedUsername) {
+        setUsername(storedUsername);
+        }
     
         // Puedes realizar cualquier otra configuración necesaria aquí
     
@@ -55,10 +61,10 @@ export default function NavigationBar() {
             <div className={`${menuOpen ? "" : "hidden"} w-full md:block md:w-auto justify-end`} id="navbar-default">
                 <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-3 rtl:space-x-reverse">
                     <li>
-                        <Link href="/" className="block py-2 px-3 text-white rounded hover:font-bold" aria-current="page">Inicio</Link>
+                        <Link href={username ? "/feed" : "/"} className="block py-2 px-3 text-white rounded hover:font-bold" aria-current="page">Inicio</Link>
                     </li>
                     <li>
-                        <Link href="/login" className="block py-2 px-3 text-white rounded hover:font-bold">Login</Link>
+                        <Link href={username ? "/perfil" : "/login"} className="block py-2 px-3 text-white rounded hover:font-bold">{username ? `Perfil` : 'Login'}</Link>
                     </li>
                     <li>
                         <Link href="/game-collection" className="block py-2 px-3 text-white rounded hover:font-bold">Juegos</Link>
