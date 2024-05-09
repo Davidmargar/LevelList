@@ -1,12 +1,11 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getAnalytics } from 'firebase/analytics';
+'use client'
+import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { initializeApp } from "firebase/app"
+import { getAuth, signOut } from "firebase/auth"
+import { getAnalytics } from 'firebase/analytics'
+import {useRouter} from 'next/navigation'
 
-// TODO: Replace the following with your app's Firebase project configuration
-// See: https://firebase.google.com/docs/web/learn-more#config-object
 const firebaseConfig = {
     apiKey: "AIzaSyBaEgrHEOgZCNYk9GnOd7ZcDjTs4MFCLxs",
     authDomain: "levellist.firebaseapp.com",
@@ -17,32 +16,48 @@ const firebaseConfig = {
     measurementId: "G-QZCVZLK76S"
   };
 
-
 export default function NavigationBar() {
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [username, setUsername] = useState('');
+    const [menuOpen, setMenuOpen] = useState(false)
+    const [username, setUsername] = useState('')
+    const router = useRouter()
 
     const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
+        setMenuOpen(!menuOpen)
+    };
+
+    const handleLogout = () => {
+
+        console.log('Ejecutando logout')
+            
+        localStorage.removeItem('email')
+        localStorage.removeItem('user')
+        localStorage.removeItem('remember')
+        setUsername('')
+
+        // Realizar cierre de sesión
+        const auth = getAuth()
+        signOut(auth).then(() => {
+            router.push('/')
+        }).catch((error) => {
+            console.error("Error al cerrar sesión:", error)
+        });
     };
 
     useEffect(() => {
         // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const analytics = getAnalytics(app);
-        auth.languageCode = 'es';
+        const app = initializeApp(firebaseConfig)
+        const auth = getAuth(app)
+        const analytics = getAnalytics(app)
+        auth.languageCode = 'es'
 
-        const storedUsername = localStorage.getItem('user');
+        const storedUsername = localStorage.getItem('user')
+        console.log("Valor almacenado en el localStorage:", storedUsername)
         if (storedUsername) {
-        setUsername(storedUsername);
+            setUsername(storedUsername);
+        } else {
+            setUsername('');
         }
-    
-        // Puedes realizar cualquier otra configuración necesaria aquí
-    
-        return () => {
-          // Realizar limpieza si es necesario
-        };
+
       }, []);
 
     return (
@@ -61,10 +76,10 @@ export default function NavigationBar() {
             <div className={`${menuOpen ? "" : "hidden"} w-full md:block md:w-auto justify-end`} id="navbar-default">
                 <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-3 rtl:space-x-reverse">
                     <li>
-                        <Link href={username ? "/feed" : "/"} className="block py-2 px-3 text-white rounded hover:font-bold" aria-current="page">Inicio</Link>
+                        <Link href={username !== '' ? "/feed" : "/"} className="block py-2 px-3 text-white rounded hover:font-bold" aria-current="page">Inicio</Link>
                     </li>
                     <li>
-                        <Link href={username ? "/perfil" : "/login"} className="block py-2 px-3 text-white rounded hover:font-bold">{username ? `Perfil` : 'Login'}</Link>
+                        <Link href={username !== '' ? "/perfil" : "/login"} className="block py-2 px-3 text-white rounded hover:font-bold">{username !== '' ? `Perfil` : 'Login'}</Link>
                     </li>
                     <li>
                         <Link href="/game-collection" className="block py-2 px-3 text-white rounded hover:font-bold">Juegos</Link>
@@ -72,6 +87,7 @@ export default function NavigationBar() {
                     <li>
                         <a href="#" className="block py-2 px-3 text-white rounded hover:font-bold">Contacto</a>
                     </li>
+                    {username !== '' && <button onClick={handleLogout}>Cerrar sesión</button>}
                 </ul>
             </div>
         </div>

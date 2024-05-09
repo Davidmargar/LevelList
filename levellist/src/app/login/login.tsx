@@ -1,17 +1,21 @@
 'use client'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 import { useState } from "react"
+import {useRouter} from 'next/navigation'
 
 export default function Login() {
 
     let [email, setEmail] = useState('')
     let [password, setPassword] = useState('')
-    let [errorMessage, setErrorMessage] = useState('')
-    let [successMessage, setSuccessMessage] = useState('')
+    let [remember, setRemember] = useState('')
+    const router = useRouter()
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value)
-        setErrorMessage("")
+    }
+
+    const handleRememberChange = (event) => {
+        setRemember(event.target.value)
     }
 
     const handlePassChange = (event) => {
@@ -35,12 +39,20 @@ export default function Login() {
                 localStorage.setItem('user', userCredential.user.displayName)
                 console.log(localStorage.getItem('user'))
             }
+
+            if(remember) {
+                localStorage.setItem('remember', 'S')
+            }
+
+            router.push('/')
             
         })
         .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-        });
+            console.error("Error de inicio de sesión:", error);
+            // Limpiamos el almacenamiento local, por si acaso.
+            localStorage.removeItem('email');
+            localStorage.removeItem('user');
+        })
     }
     
     return (
@@ -72,9 +84,10 @@ export default function Login() {
                         <div className="flex items-center h-5">
                             <input id="remember" 
                             type="checkbox" 
-                            value="" 
+                            value= {remember}
+                            onChange={handleRememberChange} 
                             className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-gray-300" 
-                            required />
+                            />
                         </div>
                         <label htmlFor="remember" className="ms-2 text-sm font-medium">Recuérdame</label>
                     </div>

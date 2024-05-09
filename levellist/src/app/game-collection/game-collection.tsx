@@ -16,23 +16,22 @@ const GameCollection: React.FC = () => {
   const [rating, setRating] = useState<number>(0);
 
   useEffect(() => {
-    // Función para cargar juegos desde la API de IGDB
     const loadGames = async () => {
-        const token = await axios.post('https://id.twitch.tv/oauth2/token?client_id=4k8jd24bztopbnifb92juh3ktfw92a&client_secret=cpszc31vdo4064yv7kfsrv6yvipbz1&grant_type=client_credentials');
-        console.log(token.data.access_token);
       try {
+        const tokenResponse = await axios.post('https://id.twitch.tv/oauth2/token?client_id=4k8jd24bztopbnifb92juh3ktfw92a&client_secret=cpszc31vdo4064yv7kfsrv6yvipbz1&grant_type=client_credentials');
+        const accessToken = tokenResponse.data.access_token;
+        const body = {
+          fields: 'name,genres.name',
+          where: 'id = 1942'
+        }
         const response = await axios.post(
-          'https://api.igdb.com/v4/games',
-          {
-            // Aquí especificas los campos que deseas recuperar
-            fields: '*;',
-            // Puedes agregar otros filtros, ordenamientos, etc. según lo necesites
-            // Ejemplo: where: 'platforms = 48;'
-          },
+          'https://cors-anywhere.herokuapp.com/https://api.igdb.com/v4/games/',
+          `${body}`,
           {
             headers: {
-              'Client-ID': '4k8jd24bztopbnifb92juh3ktfw92a', // Reemplaza con tu ID de cliente
-              'Authorization': `bearer ${token.data.access_token}` // Reemplaza con tu token de acceso
+              'Client-ID': '4k8jd24bztopbnifb92juh3ktfw92a',
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
             }
           }
         );
@@ -41,9 +40,13 @@ const GameCollection: React.FC = () => {
         console.error('Error al cargar juegos:', error);
       }
     };
-
+  
     loadGames();
   }, []);
+  
+  useEffect(() => {
+    console.log(games);
+  }, [games]);
 
   const handleGameSelect = (game: Game) => {
     setSelectedGame(game);
@@ -54,7 +57,6 @@ const GameCollection: React.FC = () => {
   };
 
   const handleAddToCollection = () => {
-    // Aquí puedes guardar el juego seleccionado y su puntuación en la colección del usuario
     console.log('Añadir a la colección:', selectedGame, 'con puntuación:', rating);
   };
 
