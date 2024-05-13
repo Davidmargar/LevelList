@@ -12,7 +12,7 @@ export async function fetchAccessToken() {
 
 export async function fetchGamesData(accessToken) {
   try {
-    const data = 'fields *; search "zelda";';
+    const data = 'fields *; where rating > 80 & hypes > 10; limit 18;';
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -54,6 +54,31 @@ export async function fetchGameCovers(accessToken,ID) {
     return response.data;
   } catch (error) {
     console.log('Error al obtener los datos de los juegos:', error);
+    throw error;
+  }
+}
+
+export async function fetchJuego(accessToken,nombre) {
+  try {
+
+    const data = `fields *; search "${nombre}"; where category = 0;`;
+    const config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: '/games',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': '4k8jd24bztopbnifb92juh3ktfw92a',
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'text/plain'
+      },
+      data: data
+    };
+
+    const response = await axios.request(config);
+    return response.data;
+  } catch (error) {
+    console.log('No se ha encontrado el juego:', error);
     throw error;
   }
 }
