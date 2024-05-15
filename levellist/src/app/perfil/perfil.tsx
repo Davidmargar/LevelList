@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
-import { getStorage, ref, getDownloadURL, getMetadata } from 'firebase/storage';
+import { getStorage, ref, getDownloadURL, getMetadata, StorageReference } from 'firebase/storage';
 import { use } from 'vue/types/umd';
 import { fetchAccessToken, fetchGameCovers } from '../api';
 
@@ -83,7 +83,7 @@ export default function Perfil() {
 
     //Buscamos en Firebase Storage si hay imagen de usuario, si la hay, la usamos.
     const profileImg = ref(storage, `${userID}.png`);
-    const checkImageExists = async (imageRef) => {
+    const checkImageExists = async (imageRef: StorageReference) => {
       try {
         await getMetadata(imageRef);
         return true;
@@ -98,7 +98,7 @@ export default function Perfil() {
     };
 
     //Descarga la imagen del storage.
-    const getImageUrl = async (imageRef) => {
+    const getImageUrl = async (imageRef: StorageReference) => {
       try {
         const exists = await checkImageExists(imageRef);
         return exists ? getDownloadURL(imageRef) : getDownloadURL(dummy);
@@ -112,9 +112,7 @@ export default function Perfil() {
       .then((url) => {
         if (url) {
           setImageUrl(url);
-        } else {
-          // Handle case where both user image and dummy image fail to load
-        }
+        } 
       });
 
     setUserId(userID);

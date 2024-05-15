@@ -1,6 +1,6 @@
 'use client'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {useRouter} from 'next/navigation'
 
 export default function Login() {
@@ -8,7 +8,15 @@ export default function Login() {
     let [email, setEmail] = useState('')
     let [password, setPassword] = useState('')
     let [remember, setRemember] = useState('')
+    let [isLogged, setLogged] = useState(false)
+
     const router = useRouter()
+
+    useEffect(() => {
+        if (localStorage.getItem('user') != null) {
+            router.push('/');
+        }
+    }, []);
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value)
@@ -44,7 +52,7 @@ export default function Login() {
                 localStorage.setItem('remember', 'S')
             }
 
-            router.push('/')
+            window.location.reload();
             
         })
         .catch((error) => {
