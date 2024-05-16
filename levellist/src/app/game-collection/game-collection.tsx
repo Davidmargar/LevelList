@@ -159,11 +159,13 @@ const GameCollection: React.FC = () => {
           user: localStorage.getItem('user')
         });
         console.log("Añadido a la BD con el ID: ", docRef.id);
+        alert("¡Reseña añadida con éxito!")
       } catch (e) {
         console.error("Error al añadir el documento a la BD: ", e);
       }
     } else {
       console.log('Error: No has puntuado el juego.');
+      alert("Error: No has puntuado el juego.")
     }
   };
 
