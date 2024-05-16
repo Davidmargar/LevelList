@@ -43,7 +43,7 @@ export default function Registro() {
                 .catch((error) => {
                     console.log(error.message)
                 })
-                setSuccessMessage('¡Bienvenido a Levellist! Se te ha enviado un correo de activación.')
+                setSuccessMessage('¡Bienvenido a Levellist!')
                 //irInicio()
             }).catch((error) => {
                 console.log(error)
