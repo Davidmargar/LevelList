@@ -45,47 +45,41 @@ export default function Feed() {
     const fetchFollowing = async () => {
       const q = query(collection(db, 'Usuarios'), where('user', '==', userID));
       const querySnapshot = await getDocs(q);
-
-      //Array de seguimientos
+    
       const follows: { [user: string]: string } = {};
-
+    
       querySnapshot.forEach(doc => {
         const data = doc.data();
         const followedUser = data.follows;
-        if (followedUser && !follows[followedUser]) { // Verifica si el usuario seguido no está ya en follows
+        if (followedUser && !follows[followedUser]) {
           follows[followedUser] = followedUser;
         }
       });
-
+    
       setFollowing(follows);
       console.log('Sigues a: ', following)
-
+    
       const addedReviews = new Set();
-
+      const tempReviewsSeguidores: Review[] = []; // Variable temporal para acumular las reseñas
+    
       for (let i in follows) {
-        //Buscamos las reseñas de la gente a la que seguimos
         const sql = query(collection(db, 'Resenas'), where('user', '==', follows[i]));
         const queryDos = await getDocs(sql);
         const reviewsData: Review[] = queryDos.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
-
+    
         reviewsData.forEach(review => {
-          if (!addedReviews.has(review.id)) { // Verificar si la reseña ya ha sido agregada
-            addedReviews.add(review.id); // Agregar la reseña al conjunto de reseñas agregadas
+          if (!addedReviews.has(review.id)) {
+            addedReviews.add(review.id);
+            tempReviewsSeguidores.push(review); // Agregar la reseña a la variable temporal
           }
         });
-
-        const uniqueReviews = Array.from(addedReviews).map(reviewId => reviewsData.find(review => review.id === reviewId));
-
-        setReviewsSeguidores(uniqueReviews);
-
+    
         const accessToken = await fetchAccessToken();
-        for (const review of uniqueReviews) {
-          // Buscamos las portadas de cada reseña
+        for (const review of reviewsData) {
           try {
             const portada = await fetchGameCovers(accessToken, review.ID);
             if (portada.length > 0) {
               const portadaFinal = portada[0].url.replace("t_thumb", "t_cover_small");
-
               setPortada(prevPortada => ({
                 ...prevPortada,
                 [review.id]: portadaFinal
@@ -94,8 +88,7 @@ export default function Feed() {
           } catch (error) {
             console.error('Error al obtener la portada del juego:', error);
           }
-
-          // Obtenemos la URL de la imagen de usuario si no está en el array
+    
           if (!imageUrls[review.user]) {
             const imageRef = ref(storage, `${review.user}.png`);
             try {
@@ -119,7 +112,10 @@ export default function Feed() {
           }
         }
       }
+      
+      setReviewsSeguidores(tempReviewsSeguidores); // Actualizar el estado fuera del bucle
     }
+    
 
     const fetchReviews = async () => {
       try {
